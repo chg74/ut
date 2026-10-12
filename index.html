@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0f">
+<title>Alankaboot Sport</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<style>
+*{box-sizing:border-box;font-family:'Cairo',sans-serif;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+:root{--accent:#e11d2e;--accent-2:#ff3b52;--accent-glow:rgba(225,29,46,.45);--purple:#8b5cf6;--blue:#3b82f6;--green:#22c55e;--green-glow:rgba(34,197,94,.4);--text-dim:#8a8a9a;--border:rgba(255,255,255,0.08);--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px)}
+html,body{overflow-x:hidden;width:100%;position:relative;height:100%}
+body{background:radial-gradient(1200px 600px at 50% -10%,rgba(225,29,46,.14),transparent 60%),radial-gradient(900px 500px at 100% 100%,rgba(59,130,246,.08),transparent 60%),#0a0a0f;color:#fff;min-height:100vh;overscroll-behavior:none}
+
+#vpnBlockScreen{position:fixed;inset:0;z-index:2147483646;background:radial-gradient(circle at 50% 30%,rgba(225,29,46,.30),transparent 60%),linear-gradient(180deg,#0a0a0f,#05050a);display:none;flex-direction:column;justify-content:center;align-items:center;padding:40px 24px;text-align:center;overflow-y:auto}
+#vpnBlockScreen.show{display:flex}
+.vpn-shield-icon{width:130px;height:130px;border-radius:36px;background:linear-gradient(135deg,#ff3b52,#b31226);display:flex;align-items:center;justify-content:center;margin-bottom:30px;box-shadow:0 20px 80px rgba(225,29,46,.6);animation:vpnPulse 1.8s ease-in-out infinite;position:relative;flex-shrink:0}
+.vpn-shield-icon::after{content:'';position:absolute;inset:-8px;border-radius:42px;border:2px dashed rgba(225,29,46,.4);animation:rotateRing 8s linear infinite}
+@keyframes rotateRing{to{transform:rotate(360deg)}}
+@keyframes vpnPulse{0%,100%{transform:scale(1);box-shadow:0 20px 80px rgba(225,29,46,.6)}50%{transform:scale(1.08);box-shadow:0 20px 100px rgba(225,29,46,.9)}}
+.vpn-shield-icon svg{width:68px;height:68px;fill:#fff}
+.vpn-big-title{color:#fff;font-size:28px;font-weight:900;margin-bottom:14px}
+.vpn-big-sub{color:#b8b8c8;font-size:15px;line-height:2.1;font-weight:600;max-width:400px;margin-bottom:26px}
+.vpn-big-sub b{color:#ff6b7a;font-weight:900}
+.vpn-steps{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:20px 24px;margin-bottom:26px;max-width:400px;width:100%;text-align:right}
+.vpn-steps .step{display:flex;align-items:center;gap:12px;padding:10px 0;color:#e0e0e8;font-size:13.5px;font-weight:700;line-height:1.6}
+.vpn-steps .step .num{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#ff3b52,#b31226);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;flex-shrink:0;color:#fff}
+.vpn-steps .step:not(:last-child){border-bottom:1px dashed rgba(255,255,255,.08)}
+.vpn-refresh-btn{background:linear-gradient(135deg,#ff3b52,#c41020);border:none;color:#fff;padding:16px 44px;border-radius:100px;font-size:15px;font-weight:900;font-family:'Cairo',sans-serif;cursor:pointer;box-shadow:0 12px 30px rgba(225,29,46,.5);display:flex;align-items:center;gap:10px;transition:.2s;margin-top:10px}
+.vpn-refresh-btn:active{transform:scale(.96)}
+.vpn-refresh-btn svg{width:20px;height:20px;fill:#fff}
+.vpn-status{margin-top:20px;color:#6a6a85;font-size:12px;font-weight:600;line-height:1.8}
+.vpn-status .dot-pulse{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff6b7a;margin-inline-end:6px;animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.3}}
+
+#lockedScreen{position:fixed;inset:0;z-index:2147483647;background:linear-gradient(180deg,#05050a,#0a0a12);display:none;flex-direction:column;justify-content:center;align-items:center;padding:40px 24px;text-align:center}
+#lockedScreen.show{display:flex}
+.lock-big-icon{width:120px;height:120px;border-radius:32px;background:linear-gradient(135deg,#ff3b52,#b31226);display:flex;align-items:center;justify-content:center;margin-bottom:28px;box-shadow:0 20px 70px rgba(225,29,46,.6);animation:lockPulse 1.8s ease-in-out infinite}
+@keyframes lockPulse{0%,100%{transform:scale(1);box-shadow:0 20px 70px rgba(225,29,46,.6)}50%{transform:scale(1.08);box-shadow:0 20px 90px rgba(225,29,46,.9)}}
+.lock-big-icon svg{width:64px;height:64px;fill:#fff}
+.lock-big-title{color:#fff;font-size:26px;font-weight:900;margin-bottom:12px}
+.lock-big-sub{color:#b8b8c8;font-size:14.5px;line-height:2;font-weight:600;max-width:380px;margin-bottom:30px}
+.lock-big-sub b{color:#ff6b7a;font-weight:900}
+.lock-refresh-btn{background:linear-gradient(135deg,#ff3b52,#c41020);border:none;color:#fff;padding:16px 40px;border-radius:100px;font-size:15px;font-weight:900;font-family:'Cairo',sans-serif;cursor:pointer;box-shadow:0 12px 30px rgba(225,29,46,.5);display:flex;align-items:center;gap:10px;transition:.2s}
+.lock-refresh-btn:active{transform:scale(.96)}
+.lock-refresh-btn svg{width:20px;height:20px;fill:#fff}
+
+#splash{position:fixed;inset:0;background:#05050a;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:9999;transition:opacity .8s;overflow:hidden;padding:20px}
+#splash.hide{opacity:0;pointer-events:none}
+.splash-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 25% 15%,rgba(225,29,46,.35),transparent 55%),radial-gradient(ellipse at 75% 85%,rgba(139,92,246,.30),transparent 55%),radial-gradient(ellipse at 50% 50%,rgba(59,130,246,.20),transparent 65%);animation:splashBgPulse 8s ease-in-out infinite alternate}
+@keyframes splashBgPulse{0%{transform:scale(1);opacity:.85}100%{transform:scale(1.12);opacity:1}}
+.splash-shape{position:absolute;border-radius:50%;filter:blur(35px);opacity:.65;pointer-events:none}
+.shape1{width:280px;height:280px;top:-100px;left:-100px;background:radial-gradient(circle,#e11d2e,transparent 70%);animation:float1 14s ease-in-out infinite}
+.shape2{width:240px;height:240px;bottom:-80px;right:-80px;background:radial-gradient(circle,#8b5cf6,transparent 70%);animation:float2 16s ease-in-out infinite}
+.shape3{width:180px;height:180px;top:45%;right:-60px;background:radial-gradient(circle,#3b82f6,transparent 70%);animation:float3 12s ease-in-out infinite}
+@keyframes float1{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(60px,45px,0) scale(1.15)}}
+@keyframes float2{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(-50px,-40px,0) scale(1.12)}}
+@keyframes float3{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(-35px,35px,0) scale(1.08)}}
+.splash-rings{position:relative;width:190px;height:190px;display:flex;justify-content:center;align-items:center;margin-bottom:30px;z-index:2}
+.splash-ring{position:absolute;border-radius:50%;border:2.5px solid transparent}
+.ring1{inset:0;border-top-color:#e11d2e;border-right-color:#e11d2e;animation:spinRing 2.4s linear infinite}
+.ring2{inset:16px;border-bottom-color:#8b5cf6;border-left-color:#8b5cf6;animation:spinRing 3s linear infinite reverse}
+.ring3{inset:32px;border-top-color:#3b82f6;border-left-color:#3b82f6;animation:spinRing 2.1s linear infinite}
+@keyframes spinRing{to{transform:rotate(360deg)}}
+.splash-logo{width:92px;height:92px;border-radius:50%;object-fit:contain;padding:12px;background:rgba(10,10,15,.85);box-shadow:0 0 30px rgba(225,29,46,.5);animation:logoPulse 3.5s ease-in-out infinite;position:relative;z-index:3}
+@keyframes logoPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.splash-brand{color:#fff;font-size:29px;font-weight:900;margin-bottom:8px;text-align:center;z-index:2;position:relative;background:linear-gradient(90deg,#fff 0%,#ff6b7a 25%,#fff 50%,#a78bfa 75%,#fff 100%);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3.5s ease-in-out infinite}
+@keyframes shimmer{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.splash-tagline{color:rgba(255,255,255,.7);font-size:13px;font-weight:600;margin-bottom:38px;z-index:2;position:relative;display:flex;align-items:center;gap:8px}
+.splash-tagline .dot{width:6px;height:6px;border-radius:50%;background:var(--accent-2);box-shadow:0 0 10px var(--accent-glow);animation:blink 1.2s infinite}
+.splash-progress-wrap{width:240px;max-width:78%;z-index:2;position:relative;text-align:center}
+.splash-progress{width:100%;height:5px;background:rgba(255,255,255,.08);border-radius:100px;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
+.splash-progress-fill{height:100%;width:0;background:linear-gradient(90deg,#e11d2e,#ff3b52,#8b5cf6,#3b82f6,#e11d2e);background-size:400% 100%;border-radius:100px;animation:fillProgress 2.6s cubic-bezier(.4,0,.2,1) forwards,flowGradient 3s linear infinite;box-shadow:0 0 14px rgba(225,29,46,.85)}
+@keyframes fillProgress{to{width:100%}}
+@keyframes flowGradient{0%{background-position:0% 50%}100%{background-position:400% 50%}}
+.splash-percent{color:#fff;font-size:13px;font-weight:800;margin-top:14px;letter-spacing:2px;text-shadow:0 0 14px rgba(225,29,46,.7)}
+
+#app{display:none;opacity:0;transition:opacity .7s;min-height:100vh;padding-top:calc(var(--safe-top) + 12px);padding-bottom:calc(96px + var(--safe-bottom));position:relative;z-index:1}
+#app.show{display:block;opacity:1}
+.app-topbar{position:sticky;top:0;z-index:50;padding:6px 14px 12px;margin:0 -12px 14px;background:linear-gradient(180deg,rgba(10,10,15,.85),rgba(10,10,15,.55) 70%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.app-topbar-inner{display:flex;align-items:center;gap:10px;max-width:640px;margin:0 auto}
+.app-logo{width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.06);padding:4px;border:1px solid var(--border);object-fit:contain;flex-shrink:0}
+.app-title-wrap{flex:1;min-width:0;text-align:right}
+.app-title{color:#fff;font-size:14px;font-weight:800;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app-subtitle{color:var(--text-dim);font-size:10.5px;font-weight:600;margin-top:2px;display:flex;align-items:center;gap:5px}
+.app-subtitle .live-ind{width:6px;height:6px;border-radius:50%;background:var(--accent-2);box-shadow:0 0 8px var(--accent-glow);animation:blink 1.2s infinite}
+.app-topbar-btn{width:38px;height:38px;border-radius:50%;background:linear-gradient(180deg,#3aa8e0,#0088cc);display:flex;justify-content:center;align-items:center;flex-shrink:0;text-decoration:none;box-shadow:0 6px 16px rgba(0,136,204,.35)}
+.app-topbar-btn svg{width:20px;height:20px;fill:#fff}
+.app-content{max-width:640px;margin:0 auto;padding:0 12px}
+.section-title{display:flex;align-items:center;gap:10px;color:#fff;font-size:15px;font-weight:800;margin:6px 4px 14px}
+.section-title::before{content:'';width:3px;height:16px;border-radius:4px;background:linear-gradient(180deg,var(--accent-2),var(--accent));box-shadow:0 0 12px var(--accent-glow)}
+.section-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(225,29,46,.35),transparent)}
+.cats-grid{display:flex;flex-direction:column;gap:8px}
+.cat-tile{background:linear-gradient(90deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:14px;padding:9px 12px;cursor:pointer;display:flex;align-items:center;gap:12px;position:relative;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.30)}
+.cat-tile::before{content:'';position:absolute;right:0;top:6px;bottom:6px;width:3px;background:linear-gradient(180deg,var(--accent-2),var(--purple));border-radius:4px;box-shadow:0 0 10px var(--accent-glow)}
+.cat-tile:active{transform:scale(.98);border-color:rgba(225,29,46,.5)}
+.cat-tile .cat-logo{width:44px;height:44px;border-radius:11px;background:rgba(255,255,255,.05);padding:5px;object-fit:contain;flex-shrink:0;border:1px solid var(--border)}
+.cat-tile .cat-info{flex:1;min-width:0;text-align:right}
+.cat-tile .cat-name{color:#fff;font-weight:800;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.cat-tile .cat-count{color:var(--accent-2);font-size:10.5px;font-weight:700}
+.cat-tile .cat-arrow{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.06);display:flex;justify-content:center;align-items:center;flex-shrink:0;border:1px solid var(--border)}
+.cat-tile .cat-arrow svg{width:12px;height:12px;fill:var(--text-dim)}
+.channels-grid{display:flex;flex-direction:column;gap:8px}
+.channel-tile{background:linear-gradient(90deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:14px;padding:9px 12px;cursor:pointer;display:flex;align-items:center;gap:12px;position:relative;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.30)}
+.channel-tile::before{content:'';position:absolute;right:0;top:6px;bottom:6px;width:3px;background:linear-gradient(180deg,var(--green),#4ade80);border-radius:4px;box-shadow:0 0 10px var(--green-glow)}
+.channel-tile:not(.live)::before{background:rgba(255,255,255,.15);box-shadow:none}
+.channel-tile:not(.live){opacity:.6}
+.channel-tile:active{transform:scale(.98)}
+.channel-tile .logo{width:42px;height:42px;border-radius:10px;background:rgba(255,255,255,.05);padding:5px;object-fit:contain;flex-shrink:0;border:1px solid var(--border)}
+.channel-tile .name{color:#fff;font-weight:800;font-size:13px;flex:1;min-width:0;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.channel-tile .status{display:inline-flex;align-items:center;gap:4px;padding:4px 11px;border-radius:100px;font-size:10px;font-weight:800;flex-shrink:0}
+.channel-tile.live .status{background:linear-gradient(180deg,#4ade80,#16a34a);color:#fff;box-shadow:0 4px 12px var(--green-glow)}
+.channel-tile:not(.live) .status{background:rgba(255,255,255,.06);color:var(--text-dim);border:1px solid var(--border)}
+.live-list{display:flex;flex-direction:column;gap:8px}
+.live-card{position:relative;display:flex;align-items:center;gap:12px;background:linear-gradient(90deg,rgba(225,29,46,.10),rgba(139,92,246,.06) 40%,rgba(255,255,255,.02));border:1px solid rgba(225,29,46,.20);border-radius:14px;padding:9px 12px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.30)}
+.live-card::before{content:'';position:absolute;right:0;top:6px;bottom:6px;width:3px;background:linear-gradient(180deg,var(--accent-2),var(--purple));border-radius:4px}
+.live-card .lc-logo{width:44px;height:44px;border-radius:11px;background:rgba(255,255,255,.05);padding:5px;object-fit:contain;flex-shrink:0;border:1px solid var(--border)}
+.live-card .lc-info{flex:1;min-width:0;text-align:right}
+.live-card .lc-name{color:#fff;font-weight:800;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.live-card .lc-cat{color:var(--text-dim);font-size:10px;font-weight:600}
+.live-card .lc-badge{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:100px;font-size:10px;font-weight:800;flex-shrink:0}
+.live-card.on .lc-badge{background:linear-gradient(180deg,#4ade80,#16a34a);color:#fff}
+.live-card.off .lc-badge{background:rgba(255,255,255,.05);color:var(--text-dim);border:1px solid var(--border)}
+.live-card.off{opacity:.55}
+.live-card.off::before{background:rgba(255,255,255,.15)}
+.live-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;margin:0 0 12px;background:linear-gradient(135deg,rgba(225,29,46,.18),rgba(139,92,246,.12));border:1px solid rgba(225,29,46,.22);border-radius:16px}
+.live-header .lh-icon{width:40px;height:40px;border-radius:12px;background:linear-gradient(180deg,var(--accent-2),var(--accent));display:flex;justify-content:center;align-items:center;flex-shrink:0}
+.live-header .lh-icon svg{width:20px;height:20px;fill:#fff}
+.live-header .lh-text{flex:1;text-align:right;padding-inline-end:10px}
+.live-header .lh-title{color:#fff;font-size:14px;font-weight:800}
+.live-header .lh-sub{color:#e8b8be;font-size:10.5px;font-weight:600;margin-top:2px}
+.live-header .lh-count{background:rgba(255,255,255,.12);color:#fff;padding:5px 12px;border-radius:100px;font-size:11px;font-weight:800;border:1px solid rgba(255,255,255,.15)}
+.empty-msg{text-align:center;color:var(--text-dim);padding:50px 20px;font-size:13px;line-height:2;font-weight:500}
+.back-row{margin:0 4px 12px}
+.back-cat-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);color:#fff;padding:8px 16px;border-radius:100px;border:1px solid var(--border);font-weight:700;font-size:12.5px;cursor:pointer;font-family:'Cairo',sans-serif}
+.back-cat-btn svg{width:14px;height:14px;fill:currentColor}
+.app-bottomnav{position:fixed;bottom:0;left:0;right:0;z-index:80;background:linear-gradient(180deg,rgba(10,10,15,.85),rgba(10,10,15,.98));backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid rgba(255,255,255,.06);padding:8px 4px calc(8px + var(--safe-bottom));display:flex;justify-content:space-around;align-items:center}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px;border-radius:14px;cursor:pointer;text-decoration:none;color:var(--text-dim);font-size:9.5px;font-weight:700;font-family:'Cairo',sans-serif;background:transparent;border:none;min-width:54px}
+.nav-item svg{width:22px;height:22px;fill:currentColor}
+.nav-item.active{color:var(--accent-2);background:rgba(225,29,46,.1)}
+.toast{position:fixed;bottom:calc(90px + var(--safe-bottom));left:50%;transform:translateX(-50%) translateY(10px);background:linear-gradient(180deg,var(--accent-2),var(--accent));color:#fff;padding:11px 22px;border-radius:100px;font-weight:700;font-size:12.5px;z-index:999999;opacity:0;transition:.35s;pointer-events:none;font-family:'Cairo',sans-serif;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.error{background:linear-gradient(180deg,#ff3b52,#b31226)}
+.toast.success{background:linear-gradient(180deg,#4ade80,#16a34a)}
+.player-download-modal{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.94);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;padding:20px}
+.player-download-modal.show{display:flex;animation:fadeInModal .3s}
+@keyframes fadeInModal{from{opacity:0}to{opacity:1}}
+.pdm-panel{width:100%;max-width:420px;background:linear-gradient(180deg,#12121f,#0a0a18);border-radius:24px;border:1px solid rgba(59,130,246,.35);padding:30px 24px 24px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.8);animation:popIn .35s cubic-bezier(.16,1,.3,1)}
+@keyframes popIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.pdm-icon{width:84px;height:84px;border-radius:24px;background:linear-gradient(135deg,#3b82f6,#1e40af);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;box-shadow:0 12px 40px rgba(59,130,246,.4)}
+.pdm-icon svg{width:44px;height:44px;fill:#fff}
+.pdm-title{color:#fff;font-size:19px;font-weight:900;margin-bottom:8px}
+.pdm-sub{color:#8b8ba7;font-size:13px;line-height:1.8;font-weight:600;margin-bottom:22px}
+.pdm-btn{width:100%;padding:16px 18px;border:0;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Cairo',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;transition:.15s;color:#fff;text-decoration:none;margin-bottom:10px}
+.pdm-btn:active{transform:scale(.97)}
+.pdm-btn.mx{background:linear-gradient(135deg,#3b82f6,#1e40af);box-shadow:0 10px 30px rgba(59,130,246,.4)}
+.pdm-btn.vlc{background:linear-gradient(135deg,#ff8c1a,#e85d00);box-shadow:0 10px 30px rgba(255,107,0,.4)}
+.pdm-btn.close{background:transparent;color:#6d6d8a;border:1px solid rgba(255,255,255,.1);font-size:13px;padding:12px;margin-top:6px}
+.pdm-note{color:#5a5a75;font-size:11px;text-align:center;margin-top:14px;line-height:1.7;font-weight:600}
+</style>
+</head>
+<body>
+
+<div id="vpnBlockScreen">
+<div class="vpn-shield-icon">
+<svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+</div>
+<div class="vpn-big-title">🚫 تم اكتشاف VPN / Reqable</div>
+<div class="vpn-big-sub">
+التطبيق <b>مش بيشتغل مع VPN ولا مع برامج التجسس</b><br>
+زي <b>Reqable / Charles / Fiddler / Proxyman</b><br>
+من فضلك <b>احذف التطبيق ده من جهازك</b> وبعدين افتح التطبيق تاني
+</div>
+<div class="vpn-steps">
+<div class="step"><span class="num">1</span><span>اقفل الـ VPN أو برنامج Reqable خالص</span></div>
+<div class="step"><span class="num">2</span><span><b style="color:#ff6b7a">امسح التطبيق من الجهاز</b> (مش بس اقفله)</span></div>
+<div class="step"><span class="num">3</span><span>اضغط "إعادة التحميل" وهيرجع يشتغل عادي</span></div>
+</div>
+<button class="vpn-refresh-btn" onclick="location.reload()">
+<svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+إعادة التحميل
+</button>
+<div class="vpn-status"><span class="dot-pulse"></span>جاري المراقبة المستمرة...</div>
+</div>
+
+<div id="lockedScreen">
+<div class="lock-big-icon">
+<svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+</div>
+<div class="lock-big-title">🚫 ممنوع</div>
+<div class="lock-big-sub">
+تم اكتشاف <b>محاولة فحص</b><br>
+التطبيق اتقفل لأسباب أمنية<br><br>
+اقفل <b>أدوات المطور</b> واضغط على الزرار عشان ترجع
+</div>
+<button class="lock-refresh-btn" onclick="location.reload()">
+<svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+إعادة التحميل
+</button>
+</div>
+
+<div id="splash">
+<div class="splash-bg"></div>
+<div class="splash-shape shape1"></div>
+<div class="splash-shape shape2"></div>
+<div class="splash-shape shape3"></div>
+<div class="splash-rings">
+<div class="splash-ring ring1"></div>
+<div class="splash-ring ring2"></div>
+<div class="splash-ring ring3"></div>
+<img class="splash-logo" src="https://i.postimg.cc/xT8rcsT1/file-000000008bb4820ebcd371e64fff0469.png" alt="">
+</div>
+<div class="splash-brand">Alankaboot Sport</div>
+<div class="splash-tagline"><span class="dot"></span><span>البث المباشر للقنوات الرياضية</span></div>
+<div class="splash-progress-wrap">
+<div class="splash-progress"><div class="splash-progress-fill"></div></div>
+<div class="splash-percent" id="splashPercent">0%</div>
+</div>
+</div>
+
+<div id="app">
+<div class="app-topbar">
+<div class="app-topbar-inner">
+<img class="app-logo" src="https://i.postimg.cc/xT8rcsT1/file-000000008bb4820ebcd371e64fff0469.png" alt="">
+<div class="app-title-wrap">
+<div class="app-title">Alankaboot Sport</div>
+<div class="app-subtitle"><span class="live-ind"></span><span>البث المباشر للقنوات</span></div>
+</div>
+<a class="app-topbar-btn" href="https://t.me/alankabootsport" target="_blank" rel="noopener">
+<svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+</a>
+</div>
+</div>
+<div class="app-content">
+<div id="viewCategories">
+<div class="section-title">الأقسام</div>
+<div class="cats-grid" id="catsGrid"><div class="empty-msg">📺<br>جاري التحميل...</div></div>
+</div>
+<div id="viewChannels" style="display:none">
+<div class="back-row">
+<button class="back-cat-btn" onclick="backToCategories()">
+<svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg> رجوع
+</button>
+</div>
+<div class="section-title" id="catTitle">قنوات القسم</div>
+<div class="channels-grid" id="channelsGrid"></div>
+</div>
+<div id="viewLive" style="display:none">
+<div class="back-row">
+<button class="back-cat-btn" onclick="navHome()">
+<svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg> رجوع
+</button>
+</div>
+<div class="live-header">
+<div class="lh-icon"><svg viewBox="0 0 24 24"><path d="M21 6h-7.59l3.29-3.29L16 2l-4 4-4-4-1.29 1.41L10.59 6H3c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg></div>
+<div class="lh-text">
+<div class="lh-title">كل القنوات المباشرة</div>
+<div class="lh-sub">اضغط على أي قناة لتشغيلها</div>
+</div>
+<div class="lh-count" id="liveCount">0</div>
+</div>
+<div class="live-list" id="liveList"></div>
+</div>
+</div>
+</div>
+
+<div class="app-bottomnav" id="bottomNav" style="display:none">
+<button class="nav-item active" onclick="navHome()">
+<svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>الرئيسية
+</button>
+<button class="nav-item" onclick="navLive()">
+<svg viewBox="0 0 24 24"><path d="M21 6h-7.59l3.29-3.29L16 2l-4 4-4-4-1.29 1.41L10.59 6H3c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>مباشر
+</button>
+<a class="nav-item" href="https://t.me/alankabootsport" target="_blank" rel="noopener">
+<svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>تيليجرام
+</a>
+<a class="nav-item" href="https://t.me/boost/alankabootsport" target="_blank" rel="noopener">
+<svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>ادعمنا
+</a>
+<a class="nav-item" href="https://t.me/omrmejo" target="_blank" rel="noopener">
+<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>المطور
+</a>
+</div>
+
+<div class="player-download-modal" id="playerDownloadModal">
+<div class="pdm-panel">
+<div class="pdm-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+<div class="pdm-title">محتاج تحمّل مشغل</div>
+<div class="pdm-sub">مفيش مشغل فيديو مثبت على جهازك<br>حمّل واحد من دول عشان تشغّل القنوات</div>
+<a href="https://play.google.com/store/apps/details?id=com.mxtech.videoplayer.ad" target="_blank" class="pdm-btn mx">
+<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+تحميل MX Player
+</a>
+<a href="https://play.google.com/store/apps/details?id=org.videolan.vlc" target="_blank" class="pdm-btn vlc">
+<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12.03 2.25a1.5 1.5 0 0 0-1.5 1.5c0 .5.25.94.63 1.22L3.4 19.16a1.5 1.5 0 0 0 1.28 2.25h14.64a1.5 1.5 0 0 0 1.28-2.25L12.9 4.97c.38-.28.63-.72.63-1.22a1.5 1.5 0 0 0-1.5-1.5zM12 8.5l4.75 9.5h-9.5L12 8.5z"/></svg>
+تحميل VLC
+</a>
+<button class="pdm-btn close" onclick="closeDownloadModal()">✕ إغلاق</button>
+<div class="pdm-note">💡 بعد التحميل ارجع للتطبيق واضغط على القناة تاني</div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+
+var locked = false;
+var vpnLocked = false;
+var isInIframe = false;
+try { isInIframe = window.self !== window.top; } catch(e) { isInIframe = true; }
+var isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+
+function showDevToolsLock(){
+if(locked) return;
+locked = true;
+try{
+var s = document.getElementById('lockedScreen');
+if(s) s.classList.add('show');
+var a = document.getElementById('app'); if(a) a.style.display = 'none';
+var sp = document.getElementById('splash'); if(sp) sp.style.display = 'none';
+var bn = document.getElementById('bottomNav'); if(bn) bn.style.display = 'none';
+window.categoriesData = [];
+if(window.fdb){
+try{ if(window.categoriesRef) window.categoriesRef.off(); }catch(e){}
+try{ if(window.viewerRef) window.viewerRef.off(); }catch(e){}
+try{ window.fdb.goOffline(); }catch(e){}
+}
+if(window.heartbeatInterval) clearInterval(window.heartbeatInterval);
+}catch(e){}
+}
+
+/* ═══ كلمات مفتاحية ═══ */
+var VPN_KEYWORDS = [
+/* VPNs */
+'vpn','nordvpn','expressvpn','surfshark','cyberghost','protonvpn',
+'private internet access','mullvad','ipvanish','hidemyass','tunnelbear',
+'windscribe','hotspot shield','purevpn','vyprvpn','astrill','hide.me',
+'ivpn','strongvpn','keepsolid','betternet','hola vpn','turbo vpn',
+'ufo vpn','zenmate','browsec','touchvpn','speedify','hiddify','psiphon',
+'lantern','shadowsocks','v2ray','xray','trojan','wireguard','openvpn',
+'outline','clash','sing-box','nekobox','v2box','throne',
+/* ⭐ أدوات البروكسي والتجسس (Reqable وأخواتها) */
+'reqable','charles proxy','charlesproxy','fiddler','fiddler everywhere',
+'mitmproxy','proxyman','http toolkit','httptoolkit','http-toolkit',
+'burp suite','burpsuite','proxifier','tcpdump','wireshark','ettercap',
+'network analyzer','packet capture','ssl proxy','https proxy',
+'mitm','packet sniffer','sniffer','proxy master','http debugger',
+'network debugger','api debugger','ssl killer','certificate pinning bypass',
+/* Datacenters */
+'digitalocean','linode','vultr','hetzner','ovh sas','amazonaws',
+'google cloud','microsoft azure','alibaba cloud','leaseweb','m247',
+'quadranet','colocrossing','contabo','scaleway','upcloud','kamatera',
+'ionos','liquidweb','choopa','zenlayer','datacamp','cdn77','tzulo',
+'frantech','buyvm','serverius','hostkey','worldstream','psychz',
+'steadfast','hivelocity','sharktech','hostiserver','egihosting',
+'anonymous','dedicated server','cloud hosting','vps hosting'
+];
+var SAFE_KEYWORDS = [
+'vodafone','etisalat','orange','we telecom','telecom egypt','te data',
+'tedata','linkdotnet','noor','nitel','mobinil','stc','mobily','zain',
+'ooredoo','verizon','at&t','comcast','spectrum','charter','t-mobile',
+'bt ','sky broadband','virgin media','talktalk','plusnet','ee limited',
+'deutsche telekom','sfr','bouygues','telefonica','movistar',
+'telecom italia','fastweb','tiscali','etisalat misr','orange egypt',
+'centurylink','telstra','optus','singtel','rogers','bell canada','telus',
+'kddi','softbank','ntt ','jio','airtel','claro','tigo','entel'
+];
+function checkKeyword(text){
+if(!text) return false;
+var lower = text.toLowerCase().trim();
+for(var i=0;i<SAFE_KEYWORDS.length;i++){
+if(lower.indexOf(SAFE_KEYWORDS[i]) !== -1){
+for(var j=0;j<VPN_KEYWORDS.length;j++){
+if(lower.indexOf(VPN_KEYWORDS[j]) !== -1) return true;
+}
+return false;
+}
+}
+for(var k=0;k<VPN_KEYWORDS.length;k++){
+if(lower.indexOf(VPN_KEYWORDS[k]) !== -1) return true;
+}
+return false;
+}
+
+function fetchText(url, timeout){
+return new Promise(function(resolve){
+var done = false;
+var t = setTimeout(function(){ if(!done){ done=true; resolve(null); } }, timeout || 5000);
+try{
+fetch(url, {cache:'no-store', mode:'cors', credentials:'omit'})
+.then(function(r){ if(!r.ok) throw new Error('bad'); return r.text(); })
+.then(function(txt){ if(done) return; done=true; clearTimeout(t); resolve(txt); })
+.catch(function(){ if(!done){ done=true; clearTimeout(t); resolve(null); } });
+}catch(e){ if(!done){ done=true; clearTimeout(t); resolve(null); } }
+});
+}
+
+function extractIP(text){
+if(!text) return null;
+var ipLine = /(?:^|\n)ip=((?:\d{1,3}\.){3}\d{1,3})/i.exec(text);
+var ip = ipLine ? ipLine[1] : null;
+if(!ip){
+var m = /\b((?:\d{1,3}\.){3}\d{1,3})\b/.exec(text);
+if(m) ip = m[1];
+}
+if(!ip) return null;
+var parts = ip.split('.').map(Number);
+if(parts[0] > 255 || parts[1] > 255 || parts[2] > 255 || parts[3] > 255) return null;
+if(parts[0] === 10) return null;
+if(parts[0] === 127) return null;
+if(parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) return null;
+if(parts[0] === 192 && parts[1] === 168) return null;
+if(parts[0] === 169 && parts[1] === 254) return null;
+if(parts[0] === 100 && parts[1] >= 64 && parts[1] <= 127) return null;
+if(parts[0] === 0) return null;
+return ip;
+}
+
+function fetchAllIPs(){
+var sources = [
+'https://api.ipify.org?format=text',
+'https://ipapi.co/ip/',
+'https://ipinfo.io/ip',
+'https://ipv4.icanhazip.com',
+'https://ifconfig.me/ip',
+'https://checkip.amazonaws.com',
+'https://www.cloudflare.com/cdn-cgi/trace',
+'https://one.one.one.one/cdn-cgi/trace'
+];
+return Promise.all(sources.map(function(url){
+return fetchText(url, 4500).then(function(txt){
+if(!txt) return null;
+return { url: url, text: txt.substring(0, 500), ip: extractIP(txt) };
+});
+})).then(function(results){
+return results.filter(function(r){ return r && r.ip; });
+});
+}
+
+function getWebRTCIPs(){
+return new Promise(function(resolve){
+var ips = {};
+var done = false;
+var pc;
+try{
+pc = new RTCPeerConnection({iceServers:[
+{urls:'stun:stun.l.google.com:19302'},
+{urls:'stun:stun1.l.google.com:19302'}
+]});
+}catch(e){ return resolve([]); }
+function finish(){
+if(done) return;
+done = true;
+try{ pc.close(); }catch(e){}
+resolve(Object.keys(ips));
+}
+pc.onicecandidate = function(ice){
+if(!ice || !ice.candidate){ finish(); return; }
+var c = ice.candidate.candidate || '';
+var m = /([0-9]{1,3}(?:\.[0-9]{1,3}){3})/.exec(c);
+if(m){
+var ip = m[1];
+var parts = ip.split('.').map(Number);
+if(parts[0] === 0 || parts[0] === 127) return;
+if(parts[0] === 10) return;
+if(parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) return;
+if(parts[0] === 192 && parts[1] === 168) return;
+if(parts[0] === 169 && parts[1] === 254) return;
+if(parts[0] === 100 && parts[1] >= 64 && parts[1] <= 127) return;
+ips[ip] = true;
+}
+};
+try{
+pc.createDataChannel('x');
+pc.createOffer().then(function(o){ return pc.setLocalDescription(o); }).catch(function(){ finish(); });
+}catch(e){ finish(); }
+setTimeout(finish, 3500);
+});
+}
+
+function parseTrace(text){
+var r = { ip:null, loc:null, warp:null };
+if(!text) return r;
+text.split('\n').forEach(function(line){
+var i = line.indexOf('=');
+if(i === -1) return;
+var k = line.substring(0,i).trim();
+var v = line.substring(i+1).trim();
+if(k === 'ip') r.ip = v;
+if(k === 'loc') r.loc = v;
+if(k === 'warp') r.warp = v;
+});
+return r;
+}
+
+/* ⭐ كشف MITM Proxy (Reqable / Charles / Fiddler) */
+function checkMitmProxy(){
+return new Promise(function(resolve){
+var targets = [
+'https://self-signed.badssl.com/?x=',
+'https://expired.badssl.com/?x=',
+'https://untrusted-root.badssl.com/?x='
+];
+var hits = 0;
+var done = 0;
+targets.forEach(function(base){
+var t = setTimeout(function(){ done++; if(done === targets.length) resolve(hits > 0); }, 5000);
+try{
+fetch(base + Date.now(), {mode:'no-cors', cache:'no-store', credentials:'omit'})
+.then(function(){
+/* في المتصفح العادي المفروض يفشل دايماً بسبب شهادة غير موثوقة */
+/* لو نجح = فيه MITM شغال */
+clearTimeout(t); hits++; done++;
+if(done === targets.length) resolve(true);
+})
+.catch(function(){
+clearTimeout(t); done++;
+if(done === targets.length) resolve(hits > 0);
+});
+}catch(e){ clearTimeout(t); done++; if(done === targets.length) resolve(hits > 0); }
+});
+});
+}
+
+/* ⭐ كشف فشل HTTPS مع Firebase (لو فيه اعتراض) */
+function checkHttpsIntegrity(){
+return new Promise(function(resolve){
+if(!navigator.onLine){ resolve(false); return; }
+var t = setTimeout(function(){ resolve(false); }, 4000);
+try{
+fetch('https://zezo-59a8d-default-rtdb.firebaseio.com/.json?shallow=true', 
+{cache:'no-store', credentials:'omit', mode:'cors'})
+.then(function(r){
+clearTimeout(t);
+if(!r.ok){ resolve(true); } else { resolve(false); }
+})
+.catch(function(){
+clearTimeout(t);
+/* فشل الاتصال والمستخدم أونلاين = فيه اعتراض أو حجب */
+resolve(navigator.onLine === true);
+});
+}catch(e){ clearTimeout(t); resolve(false); }
+});
+}
+
+/* ═══ كشف VPN + MITM ═══ */
+function detectVPN(){
+return Promise.all([
+fetchAllIPs(),
+getWebRTCIPs(),
+checkMitmProxy(),
+checkHttpsIntegrity()
+]).then(function(res){
+var httpResults = res[0] || [];
+var rtcIPs = res[1] || [];
+var mitmDetected = res[2] === true;
+var httpsBroken = res[3] === true;
+
+var strongSignals = 0;
+var weakSignals = 0;
+var reasons = [];
+
+/* ─── قوي 0: MITM Proxy (Reqable/Charles/Fiddler) ─── */
+if(mitmDetected){ strongSignals++; reasons.push('MITM Proxy (Reqable/Charles/Fiddler)'); }
+if(httpsBroken){ strongSignals++; reasons.push('HTTPS Integrity Broken'); }
+
+/* ─── قوي 1: Cloudflare WARP ─── */
+for(var i=0;i<httpResults.length;i++){
+var r = httpResults[i];
+if(r.url.indexOf('cloudflare.com/cdn-cgi') !== -1 || r.url.indexOf('1.1.1.1/cdn-cgi') !== -1 || r.url.indexOf('one.one.one.one/cdn-cgi') !== -1){
+var tr = parseTrace(r.text);
+if(tr.warp === 'on' || tr.warp === 'plus'){ strongSignals++; reasons.push('WARP ON'); }
+}
+}
+
+/* ─── قوي 2: كلمة VPN/Proxy في اسم المزود ─── */
+for(var m=0;m<httpResults.length;m++){
+var txt = (httpResults[m].text || '').toLowerCase();
+var orgMatch = /"org"\s*:\s*"([^"]+)"/i.exec(txt);
+var ispMatch = /"isp"\s*:\s*"([^"]+)"/i.exec(txt);
+if(orgMatch && checkKeyword(orgMatch[1])){ strongSignals++; reasons.push('ISP: ' + orgMatch[1]); }
+if(ispMatch && checkKeyword(ispMatch[1])){ strongSignals++; reasons.push('ISP: ' + ispMatch[1]); }
+}
+
+/* ─── قوي 3: نوع الاتصال VPN ─── */
+try{
+if(navigator.connection && navigator.connection.type === 'vpn'){
+strongSignals++; reasons.push('Connection type: VPN');
+}
+}catch(e){}
+
+/* ─── ضعيف 1: IPs مختلفة ─── */
+var uniqueHttpIPs = [];
+for(var j=0;j<httpResults.length;j++){
+var ip = httpResults[j].ip;
+if(uniqueHttpIPs.indexOf(ip) === -1) uniqueHttpIPs.push(ip);
+}
+if(uniqueHttpIPs.length >= 3){ weakSignals++; reasons.push('HTTP IPs مختلفة (' + uniqueHttpIPs.length + ')'); }
+
+/* ─── ضعيف 2: WebRTC IP مش في HTTP IPs ─── */
+if(uniqueHttpIPs.length > 0 && rtcIPs.length > 0){
+var found = false;
+for(var k=0;k<rtcIPs.length;k++){
+if(uniqueHttpIPs.indexOf(rtcIPs[k]) !== -1){ found = true; break; }
+}
+if(!found){ weakSignals++; reasons.push('WebRTC ≠ HTTP'); }
+}
+
+/* ─── ضعيف 3: WebRTC متعدد ─── */
+if(rtcIPs.length > 1){ weakSignals++; reasons.push('WebRTC متعدد'); }
+
+/* ─── القرار النهائي ─── */
+var isVpn = false;
+if(strongSignals >= 1) isVpn = true;
+else if(weakSignals >= 2) isVpn = true;
+
+console.log('[VPN] HTTP IPs:', uniqueHttpIPs);
+console.log('[VPN] WebRTC IPs:', rtcIPs);
+console.log('[VPN] MITM:', mitmDetected, 'HTTPS Broken:', httpsBroken);
+console.log('[VPN] Strong:', strongSignals, 'Weak:', weakSignals);
+console.log('[VPN] Result:', isVpn ? 'DETECTED' : 'CLEAN', reasons);
+
+return { isVpn: isVpn, reasons: reasons };
+}).catch(function(e){
+return { isVpn: false, reasons: [] };
+});
+}
+
+function showVpnBlock(){
+if(vpnLocked) return;
+vpnLocked = true;
+try{
+var s = document.getElementById('vpnBlockScreen');
+if(s) s.classList.add('show');
+var a = document.getElementById('app'); if(a) a.style.display = 'none';
+var sp = document.getElementById('splash'); if(sp) sp.style.display = 'none';
+var bn = document.getElementById('bottomNav'); if(bn) bn.style.display = 'none';
+var dm = document.getElementById('playerDownloadModal'); if(dm) dm.classList.remove('show');
+window.categoriesData = [];
+if(window.fdb){
+try{ if(window.categoriesRef) window.categoriesRef.off(); }catch(e){}
+try{ if(window.viewerRef) window.viewerRef.off(); }catch(e){}
+try{ window.fdb.goOffline(); }catch(e){}
+}
+if(window.heartbeatInterval) clearInterval(window.heartbeatInterval);
+}catch(e){}
+}
+
+function hideVpnBlock(){
+if(!vpnLocked) return;
+vpnLocked = false;
+try{
+var s = document.getElementById('vpnBlockScreen');
+if(s) s.classList.remove('show');
+}catch(e){}
+}
+
+function vpnWatchLoop(){
+detectVPN().then(function(info){
+if(info.isVpn){
+showVpnBlock();
+if(sessionStorage.getItem('wasWatching') === '1'){
+sessionStorage.removeItem('wasWatching');
+try{
+setTimeout(function(){
+try{ window.location.reload(); }catch(e){}
+}, 1500);
+}catch(e){}
+}
+} else {
+hideVpnBlock();
+}
+});
+}
+
+/* ⭐ أول فحص بعد فتح الصفحة */
+setTimeout(vpnWatchLoop, 1200);
+/* ⭐ فحص دوري كل 3 ثواني */
+setInterval(vpnWatchLoop, 3000);
+
+/* ⭐ عند الرجوع للتطبيق → فحص فوري */
+document.addEventListener('visibilitychange', function(){
+if(!document.hidden){ vpnWatchLoop(); }
+});
+
+window.addEventListener('blur', function(){
+sessionStorage.setItem('wasWatching', '1');
+});
+
+window.addEventListener('focus', function(){
+setTimeout(vpnWatchLoop, 100);
+});
+
+window.addEventListener('pageshow', function(){
+setTimeout(vpnWatchLoop, 100);
+});
+
+window.addEventListener('online', function(){ vpnWatchLoop(); });
+
+/* ═══ منع الاختصارات ═══ */
+document.addEventListener('keydown', function(e){
+var k = e.keyCode || e.which;
+if(k === 123){ e.preventDefault(); e.stopPropagation(); return false; }
+if(e.ctrlKey && e.shiftKey){
+if([73,74,67,75,69,77,83,105,106,99,107,101,109,115].indexOf(k) !== -1){
+e.preventDefault(); e.stopPropagation(); return false;
+}
+}
+if(e.ctrlKey && (k === 85 || k === 117)){ e.preventDefault(); return false; }
+if(e.ctrlKey && (k === 83 || k === 115)){ e.preventDefault(); return false; }
+if(e.ctrlKey && (k === 80 || k === 112)){ e.preventDefault(); return false; }
+if(e.ctrlKey && (k === 65 || k === 97)){ e.preventDefault(); return false; }
+if(e.ctrlKey && !e.shiftKey && (k === 67 || k === 99)){ e.preventDefault(); return false; }
+}, true);
+document.addEventListener('contextmenu', function(e){ e.preventDefault(); return false; }, true);
+document.addEventListener('copy', function(e){ e.preventDefault(); return false; }, true);
+document.addEventListener('cut', function(e){ e.preventDefault(); return false; }, true);
+document.addEventListener('dragstart', function(e){ e.preventDefault(); return false; }, true);
+document.addEventListener('touchstart', function(e){
+if(e.touches.length > 1){ e.preventDefault(); }
+}, { passive: false });
+document.addEventListener('gesturestart', function(e){ e.preventDefault(); }, false);
+
+/* ═══ كشف DevTools (ديسكتوب فقط) ═══ */
+var DEVTOOLS_DETECTION_ENABLED = !isInIframe && !isMobile;
+function detectDevTools(){
+if(!DEVTOOLS_DETECTION_ENABLED) return;
+if(locked) return;
+var wDiff = window.outerWidth - window.innerWidth;
+var hDiff = window.outerHeight - window.innerHeight;
+if(wDiff > 220 || hDiff > 320){
+var screenW = window.screen ? window.screen.width : window.innerWidth;
+var screenH = window.screen ? window.screen.height : window.innerHeight;
+if(screenW > 0 && (wDiff / screenW) > 0.25){ showDevToolsLock(); return; }
+if(screenH > 0 && (hDiff / screenH) > 0.35){ showDevToolsLock(); return; }
+}
+}
+if(DEVTOOLS_DETECTION_ENABLED){
+setInterval(detectDevTools, 800);
+setTimeout(detectDevTools, 1000);
+}
+
+try{
+var noop = function(){ return undefined; };
+var fakeConsole = {log:noop,warn:noop,error:noop,info:noop,debug:noop,trace:noop,dir:noop,table:noop,group:noop,groupEnd:noop,time:noop,timeEnd:noop,assert:noop,count:noop,clear:noop};
+Object.defineProperty(window, 'console', { get: function(){ return fakeConsole; }, configurable: false });
+}catch(e){}
+
+try{
+if(window.performance && performance.clearResourceTimings){
+performance.clearResourceTimings();
+setInterval(function(){ try{ performance.clearResourceTimings(); }catch(e){} }, 5000);
+}
+}catch(e){}
+
+})();
+</script>
+
+<script>
+const firebaseConfig = {
+apiKey: "AIzaSyAUc2C9hG9VE7RECiW19QXjNZqVH96sFE",
+authDomain: "zezo-59a8d.firebaseapp.com",
+databaseURL: "https://zezo-59a8d-default-rtdb.firebaseio.com",
+projectId: "zezo-59a8d",
+storageBucket: "zezo-59a8d.firebasestorage.app",
+messagingSenderId: "49183098248",
+appId: "1:49183098248:web:37e3fb16744042a1bb263d"
+};
+firebase.initializeApp(firebaseConfig);
+const fdb = firebase.database();
+window.fdb = fdb;
+const MY_ID = 'v_' + Math.random().toString(36).slice(2,10);
+window.MY_ID = MY_ID;
+
+function $(id){ return document.getElementById(id); }
+var splash = $('splash'), app = $('app');
+var catsGrid = $('catsGrid'), channelsGrid = $('channelsGrid');
+var viewCategories = $('viewCategories'), viewChannels = $('viewChannels');
+var viewLive = $('viewLive'), liveList = $('liveList'), liveCount = $('liveCount');
+var catTitle = $('catTitle'), toast = $('toast');
+var bottomNav = $('bottomNav'), downloadModal = $('playerDownloadModal');
+var categoriesData = [];
+window.categoriesData = categoriesData;
+var currentCatIndex = -1;
+var appStarted = false;
+
+function showToast(msg, type){
+toast.textContent = msg;
+toast.classList.remove('error','success');
+if(type) toast.classList.add(type);
+toast.classList.add('show');
+clearTimeout(showToast._t);
+showToast._t = setTimeout(function(){ toast.classList.remove('show'); }, 2500);
+}
+
+(function(){
+var pctEl = $('splashPercent'), pct = 0;
+var interval = setInterval(function(){
+pct = Math.min(100, pct + Math.floor(Math.random()*6) + 2);
+if(pctEl) pctEl.textContent = pct + '%';
+if(pct >= 100) clearInterval(interval);
+}, 90);
+})();
+setTimeout(function(){
+splash.classList.add('hide');
+setTimeout(function(){
+splash.style.display = 'none';
+enterApp();
+}, 700);
+}, 2800);
+function enterApp(){
+if(appStarted) return;
+appStarted = true;
+app.classList.add('show');
+bottomNav.style.display = 'flex';
+}
+
+var categoriesRef = null, viewerRef = null, heartbeatInt = null;
+function initFirebase(){
+categoriesRef = fdb.ref('categories');
+viewerRef = fdb.ref('viewers/' + MY_ID);
+window.categoriesRef = categoriesRef;
+window.viewerRef = viewerRef;
+categoriesRef.on('value', function(snap){
+try{
+const raw = snap.val();
+if(!raw){ categoriesData = []; window.categoriesData = categoriesData; }
+else{
+let parsed = null;
+try{ parsed = typeof raw === 'string' ? JSON.parse(raw) : raw; }catch(e){ parsed = null; }
+categoriesData = Array.isArray(parsed) ? parsed : [];
+window.categoriesData = categoriesData;
+}
+renderCurrentView();
+}catch(e){}
+}, function(err){});
+function sendHeartbeat(){ try{ viewerRef.set(Date.now()); }catch(e){} }
+sendHeartbeat();
+heartbeatInt = setInterval(sendHeartbeat, 8000);
+window.heartbeatInterval = heartbeatInt;
+try{ viewerRef.onDisconnect().remove(); }catch(e){}
+}
+initFirebase();
+
+function renderCurrentView(){
+if(currentCatIndex === -1) renderCategories();
+else renderChannels(currentCatIndex);
+}
+function escapeHtml(s){
+return String(s).replace(/[&<>"']/g, function(ch){
+return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];
+});
+}
+function renderCategories(){
+if(!categoriesData.length){
+catsGrid.innerHTML = '<div class="empty-msg">📺<br>لا توجد أقسام متاحة حالياً<br>تابع قناتنا على تيليجرام ليصلك كل جديد</div>';
+return;
+}
+catsGrid.innerHTML = categoriesData.map(function(cat,i){
+var count = (cat.channels || []).length;
+var lc = (cat.channels || []).filter(function(c){ return c.live; }).length;
+var countText = lc > 0 ? (lc + ' بث حي') : (count + ' قناة');
+return '<div class="cat-tile" onclick="openCategory('+i+')">' +
+'<img class="cat-logo" src="'+(cat.logo||'')+'" onerror="this.style.opacity=.15" alt="">' +
+'<div class="cat-info"><div class="cat-name">'+escapeHtml(cat.name||'قسم')+'</div>' +
+'<div class="cat-count">'+countText+'</div></div>' +
+'<div class="cat-arrow"><svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></div></div>';
+}).join('');
+}
+function renderChannels(ci){
+var cat = categoriesData[ci];
+if(!cat){ backToCategories(); return; }
+catTitle.textContent = cat.name || 'قنوات القسم';
+var list = cat.channels || [];
+if(!list.length){
+channelsGrid.innerHTML = '<div class="empty-msg">لا توجد قنوات في هذا القسم حالياً</div>';
+return;
+}
+channelsGrid.innerHTML = list.map(function(ch,chi){
+return '<div class="channel-tile '+(ch.live?'live':'')+'" onclick="openChannel('+chi+')">' +
+'<img class="logo" src="'+(ch.logo||'')+'" onerror="this.style.opacity=.15" alt="">' +
+'<div class="name">'+escapeHtml(ch.name||'قناة')+'</div>' +
+'<span class="status">'+(ch.live?'مباشر':'غير متاح')+'</span></div>';
+}).join('');
+}
+function renderLiveView(){
+var all = [];
+categoriesData.forEach(function(cat, ci){
+(cat.channels || []).forEach(function(ch, chi){
+all.push({ch: ch, catName: cat.name, ci: ci, chi: chi});
+});
+});
+all.sort(function(a,b){ return (b.ch.live?1:0) - (a.ch.live?1:0); });
+liveCount.textContent = all.length;
+if(!all.length){
+liveList.innerHTML = '<div class="empty-msg">📺<br>لا توجد قنوات متاحة حالياً</div>';
+return;
+}
+liveList.innerHTML = all.map(function(item){
+return '<div class="live-card '+(item.ch.live?'on':'off')+'" onclick="openLiveChannel('+item.ci+','+item.chi+')">' +
+'<img class="lc-logo" src="'+(item.ch.logo||'')+'" onerror="this.style.opacity=.15" alt="">' +
+'<div class="lc-info"><div class="lc-name">'+escapeHtml(item.ch.name||'قناة')+'</div>' +
+'<div class="lc-cat">'+escapeHtml(item.catName||'قسم')+'</div></div>' +
+'<span class="lc-badge">'+(item.ch.live?'مباشر':'غير متاح')+'</span></div>';
+}).join('');
+}
+function openCategory(i){
+currentCatIndex = i;
+viewCategories.style.display = 'none';
+viewChannels.style.display = 'block';
+viewLive.style.display = 'none';
+renderChannels(i);
+window.scrollTo({top:0, behavior:'smooth'});
+}
+function backToCategories(){
+currentCatIndex = -1;
+viewCategories.style.display = 'block';
+viewChannels.style.display = 'none';
+viewLive.style.display = 'none';
+renderCategories();
+window.scrollTo({top:0, behavior:'smooth'});
+}
+function openChannel(chi){
+var cat = categoriesData[currentCatIndex];
+if(!cat) return;
+handleChannelClick(cat.channels[chi]);
+}
+function openLiveChannel(ci, chi){
+var cat = categoriesData[ci];
+if(!cat) return;
+handleChannelClick(cat.channels[chi]);
+}
+function handleChannelClick(ch){
+if(!ch) return;
+if(!ch.live){ showToast('القناة غير متاحة حالياً'); return; }
+if(!ch.url){ showToast('لا يوجد رابط للبث'); return; }
+openPlayerWithUrl(ch.url, ch.name);
+}
+
+function openPlayerWithUrl(url, name){
+showToast('جاري فتح المشغل...', 'success');
+const isHttps = url.toLowerCase().startsWith("https");
+const scheme = isHttps ? "https" : "http";
+const urlNoProto = url.replace(/^https?:\/\//i, "");
+let opened = false;
+const mark = function(){ opened = true; };
+document.addEventListener("visibilitychange", mark, { once: true });
+window.addEventListener("pagehide", mark, { once: true });
+window.addEventListener("blur", mark, { once: true });
+const intentUrl = "intent://" + urlNoProto + 
+"#Intent;scheme=" + scheme + 
+";type=video/*" + 
+";action=android.intent.action.VIEW" + 
+";category=android.intent.category.BROWSABLE" + 
+";package=com.mxtech.videoplayer.ad" + 
+";end";
+try{ window.location.href = intentUrl; }catch(e){}
+setTimeout(function(){
+if(!opened && !document.hidden && document.visibilityState === "visible"){
+try{ window.open(url, "_blank"); }catch(e){}
+}
+}, 1500);
+setTimeout(function(){
+if(!opened && !document.hidden && document.visibilityState === "visible"){
+showDownloadModal();
+}
+}, 3500);
+}
+function showDownloadModal(){ downloadModal.classList.add('show'); }
+function closeDownloadModal(){ downloadModal.classList.remove('show'); }
+window.closeDownloadModal = closeDownloadModal;
+downloadModal.addEventListener("click", function(e){
+if(e.target === downloadModal) closeDownloadModal();
+});
+function navHome(){
+currentCatIndex = -1;
+viewCategories.style.display = 'block';
+viewChannels.style.display = 'none';
+viewLive.style.display = 'none';
+renderCategories();
+var items = document.querySelectorAll('.nav-item');
+for(var i=0;i<items.length;i++) items[i].classList.remove('active');
+if(items[0]) items[0].classList.add('active');
+window.scrollTo({top:0,behavior:'smooth'});
+}
+function navLive(){
+currentCatIndex = -1;
+viewCategories.style.display = 'none';
+viewChannels.style.display = 'none';
+viewLive.style.display = 'block';
+renderLiveView();
+var items = document.querySelectorAll('.nav-item');
+for(var i=0;i<items.length;i++) items[i].classList.remove('active');
+if(items[1]) items[1].classList.add('active');
+window.scrollTo({top:0,behavior:'smooth'});
+}
+window.navHome = navHome;
+window.navLive = navLive;
+window.openCategory = openCategory;
+window.backToCategories = backToCategories;
+window.openChannel = openChannel;
+window.openLiveChannel = openLiveChannel;
+</script>
+
+</body>
+</html>
